@@ -325,7 +325,7 @@ function formatFileContents($rawFileContents)
       // fields[0] = id attribute
       // fields[1] = date string (a * prefix denotes that it's
       //                          class attribute is 'first')
-      $first   = ($fields[1]{0} == '*');
+      $first   = ($fields[1][0] == '*');
       $class   = ($first) ? ' class="daystamp first"' : ' class="daystamp"';
       $date    = ($first) ? mb_substr($fields[1], 1) : $fields[1];
 
@@ -342,7 +342,7 @@ function formatFileContents($rawFileContents)
         // fields[0] = id attribute
         // fields[1] = hour string (a * prefix denotes that it's
         //                          class attribute is 'first')
-        $first   = ($fields[1]{0} == '*');
+        $first   = ($fields[1][0] == '*');
         $class   = ($first) ? ' class="hourstamp first"' : ' class="hourstamp"';
         $hour    = ($first) ? mb_substr($fields[1], 1) : $fields[1];
         // Message id attributes sometimes were non-unique because the messages shared
@@ -360,8 +360,8 @@ function formatFileContents($rawFileContents)
     // $fields[1] = time string
     // $fields[2] = name (a * prefix denotes an action, a ! denotes a system notice)
     // $fields[3] = text
-    $action = ($fields[2]{0} == '*');
-    $notice = ($fields[2]{0} == '!');
+    $action = ($fields[2][0] == '*');
+    $notice = ($fields[2][0] == '!');
     $name   = ($action || $notice) ? mb_substr($fields[2], 1) : $fields[2];
 
     // A system message is defined by an action by the user Lace
@@ -442,8 +442,8 @@ function extractMessageArray($line)
     $name = array_shift($linearray);
 
   // Check for action or system notice
-  $action = ($name{0} == '*') ? true : false;
-  $notice = ($name{0} == '!') ? true : false;
+  $action = ($name[0] == '*') ? true : false;
+  $notice = ($name[0] == '!') ? true : false;
 
   if ($action || $notice)
     $name = mb_substr($name, 1);
@@ -490,18 +490,18 @@ function preFilterName($name)
 
   // Lace uses an asterisk prefix in the name to denote actions,
   // so users can't have one in that position.
-  if ($name{0} == '*')
+  if ($name[0] == '*')
     $name = mb_substr($name, 1);
 
   // Lace uses a bang prefix in the name to denote system notices,
   // so users can't have one in that position
-  if ($name{0} == '!')
+  if ($name[0] == '!')
     $name = mb_substr($name, 1);
 
   // Replace all < and > characters with entities
   // And, sorry, Lace uses pipes as delimiters... no soup for you!
-  $search  = array('<', '>', '|');
-  $replace = array('&lt;', '&gt;', '');
+  $search  = ['<', '>', '|'];
+  $replace = ['&lt;', '&gt;', ''];
   $name    = str_replace($search, $replace, $name);
 
   return $name;
@@ -540,9 +540,14 @@ function preFilterLink($text)
  */
 function codeTagFilter($text)
 {
-  $pattern = '%(<code>)(.*?)(</code>)%se';
-  $replace = "'\\1'.htmlentities(codeTagFilter('\\2')).'\\3'";
-  return stripslashes(preg_replace($pattern, $replace, $text));
+  $text = preg_replace_callback(
+    '%(<code>)(.*?)(</code>)%s',
+    function ($matches) {
+      return $matches[1] . htmlentities(codeTagFilter($matches[2])) . $matches[3];
+    },
+    $text
+  );
+  return stripslashes($text);
 }
 
 /**
@@ -578,15 +583,19 @@ function preFilterText($text)
   // 400> 200    400 &gt; 200
   // 100 <>500   100 &lt;&gt; 500
   // etc...
-  $pattern = '%(\d)\s*([<>=]{1,2})\s*(\d)%se';
-  $replace = "'\\1'.htmlentities(' \\2 ').'\\3'";
-  $text = preg_replace($pattern, $replace, $text);
+  $text = preg_replace_callback(
+    '%(\d)\s*([<>=]{1,2})\s*(\d)%s',
+    function ($matches) {
+      return $matches[1] . htmlentities(codeTagFilter($matches[2])) . $matches[3];
+    },
+    $text
+  );
 
   // Replace all orphaned < and > characters with entities to keep
   // lib_filter from hosing them...
   // And, sorry, Lace uses pipes as delimiters - broken vertical bar for you!
-  $search  = array(' < ', ' > ', '|');
-  $replace = array(' &lt; ', ' &gt; ', '&brvbar;');
+  $search  = [' < ', ' > ', '|'];
+  $replace = [' &lt; ', ' &gt; ', '&brvbar;'];
   $text    = str_replace($search, $replace, $text);
 
   // Replace all mid-message newlines with <br> tags
@@ -645,7 +654,7 @@ function getCommand($text)
  */
 function prepareMessage(&$name, $text)
 {
-  $message = array();
+  $message = [];
 
   // Parse text for commands and format accordingly
   $cmd = getCommand($text);
@@ -743,7 +752,7 @@ function newLog($log, $date)
     fclose($handle);
     // return an empty array, signifying
     // that the main logfile is empty
-     return array();
+     return [];
 }
 
 /**
@@ -757,8 +766,9 @@ function logMessage($line) {
 
     // Grab the date of the
     // most recent post in the log
+    $temp = explode('||', $log[0]);
     $date = (count($log) > 0)
-        ? array_shift($temp = explode('||', $log[0]))
+        ? array_shift($temp)
         : false;
 
     // Write yesterday to file if necessary
@@ -855,7 +865,7 @@ function printLogList($currentFile)
 {
   // Grab the filenames from the
   // log directory
-  $recentLogs = array();
+  $recentLogs = [];
 
   $handle = opendir(LACE_LOGDIR);
   while ($file = readdir($handle))

@@ -3,7 +3,7 @@
 class LaceData
 {
 	var $file  = '';
-	var $data  = '';
+	var $data  = [];
 	var $hash  = '';
 	var $_hash = '';
 
@@ -15,7 +15,7 @@ class LaceData
 	function LaceData()
 	{
 		$this->getData();
-		register_shutdown_function(array(&$this, 'storeData'));
+		register_shutdown_function([$this, 'storeData']);
 
 		return true;
 	}
@@ -28,7 +28,7 @@ class LaceData
 
 	function getData()
 	{
-		if (is_array($this->data))
+		if (!empty($this->data))
 		{
 			return true;
 		}
@@ -37,7 +37,7 @@ class LaceData
 
 		if ($data === false)
 		{
-			$this->data = array();
+			$this->data = [];
 		}
 		else
 		{
@@ -122,7 +122,7 @@ class LaceData
 		return true;
 	}
 
-	function update($key, $value)
+	function update($key, $value = null)
 	{
 		if (is_array($this->data) && array_key_exists($key, $this->data))
 		{

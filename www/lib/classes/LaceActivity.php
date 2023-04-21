@@ -15,7 +15,7 @@ class LaceActivity extends LaceData
 		$this->setFile(LACE_ACTIVITY_FILE);
 
 		$this->getData();
-		register_shutdown_function(array(&$this, 'storeData'));
+		register_shutdown_function([$this, 'storeData']);
 	}
 
 	function setExpiry($expiry)
@@ -37,7 +37,7 @@ class LaceActivity extends LaceData
 		}
 		else
 		{
-			$this->data = array();
+			$this->data = [];
 		}
 	}
 
@@ -80,14 +80,14 @@ class LaceActivity extends LaceData
 		$this->add($to, time());
 	}
 
-	function update($name)
+	function update($name, $value = null)
 	{
 		return parent::update($name, time());
 	}
 
 	function getUsers()
 	{
-		$users = (count($this->data) > 0) ? array_keys($this->data) : array();
+		$users = (count($this->data) > 0) ? array_keys($this->data) : [];
 		natcasesort($users);
 		return $users;
 	}

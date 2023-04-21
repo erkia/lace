@@ -54,35 +54,6 @@ function getCookieString()
 }
 
 /**
- * fixMagicQuotes()
- *
- * Remove slashes from all incoming GET/POST/COOKIE data
- *
- * Yoinked straight out of Ryan Grove's Poseidon
- * http://wiki.wonko.com/software/poseidon
- */
-function fixMagicQuotes()
-{
-  set_magic_quotes_runtime(0);
-
-  if (get_magic_quotes_gpc() === 0)
-    return;
-
-  function removeMagicSlashes($element)
-  {
-    if (is_array($element))
-      return array_map('removeMagicSlashes', $element);
-    else
-      return stripslashes($element);
-  }
-
-  // Remove slashes from all incoming GET/POST/COOKIE data.
-  $_GET    = array_map('removeMagicSlashes', $_GET);
-  $_POST   = array_map('removeMagicSlashes', $_POST);
-  $_COOKIE = array_map('removeMagicSlashes', $_COOKIE);
-}
-
-/**
  * duration_str()
  *
  * Turn a given number of seconds into a human readable
@@ -194,7 +165,7 @@ function getVar($var, $default = false)
  */
 function postVar($var, $default = false)
 {
-  return (array_key_exists($var, $_POST)) ? trim($_POST[$var]) : $default;
+  return (array_key_exists($var, $_POST)) ? trim($_POST[$var] ?? '') : $default;
 }
 
 /**

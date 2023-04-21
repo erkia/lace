@@ -19,7 +19,7 @@
 ini_set('display_errors', false);
 
 $_POST['op']  = 'log';
-$_POST['log'] = $_GET['date'];
+$_POST['log'] = $_GET['date'] ?? null;
 
 require_once('../index.php');
 

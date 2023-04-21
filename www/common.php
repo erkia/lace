@@ -33,9 +33,8 @@ require_once('lib/mb_compat.php');
 mb_internal_encoding('UTF-8');
 
 // Create the activity object
-$A = &new LaceActivity();
+$A = new LaceActivity();
 
-fixMagicQuotes();
 validateSession();
 
 // Feeble attempt at preventing caching

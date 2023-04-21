@@ -17,38 +17,38 @@
 
   class lib_filter {
 
-    var $tag_counts = array();
+    var $tag_counts = [];
 
     #
     # tags and attributes that are allowed
     #
 
-    var $allowed = array(
-      'a'      => array('href', 'target', 'title', 'rel'),
-      'strong' => array(),
-      'em'     => array(),
-      'code'   => array(),
-      'u'      => array(),
-      'b'      => array(),
-      'i'      => array(),
-      //'img' => array('src', 'width', 'height', 'alt'),
-    );
+    var $allowed = [
+      'a'      => ['href', 'target', 'title', 'rel'],
+      'strong' => [],
+      'em'     => [],
+      'code'   => [],
+      'u'      => [],
+      'b'      => [],
+      'i'      => [],
+      //'img' => ['src', 'width', 'height', 'alt'],
+    ];
 
 
     #
     # tags which should always be self-closing (e.g. "<img />")
     #
 
-    var $no_close = array(
+    var $no_close = [
       //'img',
-    );
+    ];
 
 
     #
     # tags which must always have seperate opening and closing tags (e.g. "<b></b>")
     #
 
-    var $always_close = array(
+    var $always_close = [
       'a',
       'u',
       'b',
@@ -56,35 +56,35 @@
       'em',
       'code',
       'strong',
-    );
+    ];
 
 
     #
     # attributes which should be checked for valid protocols
     #
 
-    var $protocol_attributes = array(
+    var $protocol_attributes = [
       //'src',
       'href',
-    );
+    ];
 
 
     #
     # protocols which are allowed
     #
 
-    var $allowed_protocols = array(
+    var $allowed_protocols = [
       'http',
       'ftp',
       'mailto',
-    );
+    ];
 
 
     #
     # tags which should be removed if they contain no content (e.g. "<b></b>" or "<b />")
     #
 
-    var $remove_blanks = array(
+    var $remove_blanks = [
       'a',
       'u',
       'b',
@@ -92,7 +92,7 @@
       'em',
       'code',
       'strong',
-    );
+    ];
 
 
     #
@@ -113,7 +113,7 @@
 
     function go($data){
 
-      $this->tag_counts = array();
+      $this->tag_counts = [];
 
       $data = $this->escape_comments($data);
       $data = $this->balance_html($data);
@@ -127,7 +127,13 @@
 
     function escape_comments($data){
 
-      $data = preg_replace("/<!--(.*?)-->/se", "'<!--'.HtmlSpecialChars(StripSlashes('\\1')).'-->'", $data);
+      $data = preg_replace_callback(
+        "/<!--(.*?)-->/s",
+        function ($matches) {
+          return '<!--'.HtmlSpecialChars(StripSlashes($matches[1])).'-->';
+        },
+        $data
+      );
 
       return $data;
     }
@@ -173,7 +179,13 @@
 
     function check_tags($data){
 
-      $data = preg_replace("/<(.*?)>/se", "\$this->process_tag(StripSlashes('\\1'))",  $data);
+      $data = preg_replace_callback(
+        "/<(.*?)>/s",
+        function ($matches) {
+          return $this->process_tag(StripSlashes($matches[1]));
+        },
+        $data
+      );
 
       foreach(array_keys($this->tag_counts) as $tag){
         for($i=0; $i<$this->tag_counts[$tag]; $i++){
@@ -301,11 +313,11 @@
         return $data;
       }
 
-      return preg_replace(
-        "/(>|^)([^<]+?)(<|$)/se",
-          "StripSlashes('\\1').".
-          "\$this->fix_case_inner(StripSlashes('\\2')).".
-          "StripSlashes('\\3')",
+      return preg_replace_callback(
+        "/(>|^)([^<]+?)(<|$)/s",
+        function ($matches) {
+          return StripSlashes($matches[1]) . $this->fix_case_inner(StripSlashes($matches[2])) . StripSlashes($matches[3]);
+        },
         $data
       );
     }
@@ -314,7 +326,13 @@
 
       $data = StrToLower($data);
 
-      $data = preg_replace('/(^|[^\w\s])(\s*)([a-z])/e',"StripSlashes('\\1\\2').StrToUpper(StripSlashes('\\3'))", $data);
+      $data = preg_replace_callback(
+        '/(^|[^\w\s])(\s*)([a-z])/',
+        function ($matches) {
+          return StripSlashes($matches[1] . $matches[2]) . StrToUpper(StripSlashes($matches[3]));
+        },
+        $data
+      );
 
       return $data;
     }
