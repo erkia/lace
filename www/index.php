@@ -87,7 +87,7 @@ switch ($op)
   </div>
 
   <div id="poweredBy">
-    Powered by <a href="http://socket7.net/lace/">Lace</a>
+    Powered by <a href="https://github.com/erkia/lace">Lace</a>
   </div>
 </div>
 </body>
