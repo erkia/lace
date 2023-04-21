@@ -100,11 +100,23 @@ function isFlooding()
 
   if ($postCount === false)
   {
-    setCookie(LACE_FLOOD_COOKIE, '1', time() + 9, LACE_URL_REL);
+    setcookie(LACE_FLOOD_COOKIE, '1', [
+      'expires' => time() + 9,
+      'path' => LACE_URL_REL,
+      'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+      'httponly' => false,
+      'samesite' => 'Strict',
+    ]);
     return false;
   }
 
-  setCookie(LACE_FLOOD_COOKIE, ++$postCount, time() + 9, LACE_URL_REL);
+  setcookie(LACE_FLOOD_COOKIE, ++$postCount, [
+    'expires' => time() + 9,
+    'path' => LACE_URL_REL,
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+    'httponly' => false,
+    'samesite' => 'Strict',
+  ]);
 
   if ($postCount > LACE_FLOOD_POST_COUNT)
   {
@@ -153,7 +165,13 @@ function laceListener($fromListener = true)
       // Reset $name just in case it has been changed
       global $name;
       $name = $post_name;
-      setcookie(LACE_NAME_COOKIE, $post_name, time() + 259200, LACE_URL_REL);
+      setcookie(LACE_NAME_COOKIE, $post_name, [
+        'expires' => time() + 2592000,
+        'path' => LACE_URL_REL,
+        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+        'httponly' => true,
+        'samesite' => 'Strict',
+      ]);
 
       addMessage($message);
     }
@@ -399,7 +417,13 @@ function getName()
   if (array_key_exists('name', $_POST) && mb_strlen(trim($_POST['name'])) > 0)
   {
     $name = urldecode($_POST['name']);
-    setcookie(LACE_NAME_COOKIE, $name, time()+3600*24*30, LACE_URL_REL);
+    setcookie(LACE_NAME_COOKIE, $name, [
+      'expires' => time() + 2592000,
+      'path' => LACE_URL_REL,
+      'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+      'httponly' => true,
+      'samesite' => 'Strict',
+    ]);
   }
   else
     $name = cookieVar(LACE_NAME_COOKIE, 'Guest ' . mb_substr(rand(0,9999), 0, 4));

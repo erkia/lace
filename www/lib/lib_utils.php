@@ -36,8 +36,21 @@ function validateSession()
 
   $A->update($name);
 
-  setcookie(LACE_SESSION_COOKIE, getCookieString(), time() + 600, LACE_URL_REL);
-  setcookie(LACE_NAME_COOKIE, $name, time() + 2592000, LACE_URL_REL);
+  setcookie(LACE_SESSION_COOKIE, getCookieString(), [
+    'expires' => time() + 600,
+    'path' => LACE_URL_REL,
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+    'httponly' => true,
+    'samesite' => 'Strict',
+  ]);
+
+  setcookie(LACE_NAME_COOKIE, $name, [
+    'expires' => time() + 2592000,
+    'path' => LACE_URL_REL,
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on",
+    'httponly' => true,
+    'samesite' => 'Strict',
+  ]);
 
   return true;
 }
