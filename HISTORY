@@ -6,6 +6,13 @@ Lace Changelog
 [-] Bug fix
 [!] Comment
 
+Version 0.1.6 (21 Apr 2023)
+
+  [*] Added support for PHP >= 7.3, dropped support for older PHP versions
+  [*] Improved cookie security
+  [-] Fixed possible path traversal when showing log files
+  [-] Fixed log order on Logs page
+
 Version 0.1.5.1 (23 July 2006)
 
   [-] Fixed several Javascript issues
