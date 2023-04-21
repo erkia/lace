@@ -18,7 +18,12 @@
 
 require_once('../config.php');
 
-$logfile = LACE_LOGDIR.postVar('log').'.dat';
+$logfile = postVar('log');
+if (preg_match('/^[a-z0-9]+$/i', $logfile)) {
+	$logfile = LACE_LOGDIR.$logfile.'.dat';
+} else {
+	$logfile = LACE_LOGFILE;
+}
 
 if (!file_exists($logfile))
 	$logfile = LACE_LOGFILE;
