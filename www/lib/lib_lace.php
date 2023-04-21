@@ -928,7 +928,7 @@ function printLogList($currentFile)
     $currentFile = str_replace('.dat', '', basename($currentFile));
 
     // Sort logs most recent first
-    sort($recentLogs);
+    usort($recentLogs, "sortFilenamesByDate");
     $recentLogs = array_reverse($recentLogs);
 
     foreach($recentLogs as $log)
@@ -937,7 +937,7 @@ function printLogList($currentFile)
 
       $date = getDateFromFileName($log);
 
-      $title = (date('j') - 1 == (int)$d) ? 'Yesterday' : $date;
+      $title = $date;
       $class = ($log == $currentFile) ?' class="this"' : '';
 
       $output .= '<li'.$class.'><a href="'.LACE_URL_REL.'logs/';
@@ -959,4 +959,15 @@ function getDateFromFileName($filename, $dateFormat = 'd F')
   $d = mb_substr($filename, 2, 2);
   $y = mb_substr($filename, 4, 4);
   return date($dateFormat, strtotime("$m/$d/$y"));
+}
+
+function sortFilenamesByDate ($a, $b)
+{
+  $ma = mb_substr($a, 0, 2);
+  $da = mb_substr($a, 2, 2);
+  $ya = mb_substr($a, 4, 4);
+  $mb = mb_substr($b, 0, 2);
+  $db = mb_substr($b, 2, 2);
+  $yb = mb_substr($b, 4, 4);
+  return strcmp ("$ya-$ma-$da", "$yb-$mb-$db");
 }
