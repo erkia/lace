@@ -18,7 +18,7 @@
 
 error_reporting(E_ALL);
 
-define('LACE_VERSION', '0.1.6');
+define('LACE_VERSION', '0.1.7');
 
 require_once('config.php');
 

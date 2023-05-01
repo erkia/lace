@@ -6,6 +6,12 @@ Lace Changelog
 [-] Bug fix
 [!] Comment
 
+Version 0.1.7 (1 May 2023)
+
+  [*] Removed old mb_compat layer
+  [*] Upgraded lib_filter.php (https://github.com/iamcal/lib_filter/)
+  [-] Fixed code refactoring typo
+
 Version 0.1.6 (21 Apr 2023)
 
   [*] Added support for PHP >= 7.3, dropped support for older PHP versions
