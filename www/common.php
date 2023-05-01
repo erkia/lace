@@ -28,7 +28,6 @@ require_once('lib/classes/LaceActivity.php');
 require_once('lib/lib_utils.php');
 require_once('lib/lib_filter.php');
 require_once('lib/lib_lace.php');
-require_once('lib/mb_compat.php');
 
 mb_internal_encoding('UTF-8');
 
