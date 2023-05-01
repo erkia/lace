@@ -610,7 +610,7 @@ function preFilterText($text)
   $text = preg_replace_callback(
     '%(\d)\s*([<>=]{1,2})\s*(\d)%s',
     function ($matches) {
-      return $matches[1] . htmlentities(codeTagFilter($matches[2])) . $matches[3];
+      return $matches[1] . htmlentities($matches[2]) . $matches[3];
     },
     $text
   );
